@@ -1,0 +1,227 @@
+const express = require('express');
+const cors = require('cors');
+const sql = require('mssql');
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+const dbConfig = {
+  server: process.env.DB_SERVER || 'SRVFIORI\\SQLEXPRESS',
+  database: process.env.DB_NAME || 'CongresoBD',
+  options: {
+    trustServerCertificate: true,
+    encrypt: false
+  },
+  authentication: {
+    type: 'default',
+    options: {
+      userName: process.env.DB_USER || 'sa',
+      password: process.env.DB_PASS || 'BD_2017#Express!'
+    }
+  }
+};
+
+let pool;
+
+async function connectDB() {
+  try {
+    pool = await sql.connect(dbConfig);
+    console.log('Conectado a SQL Server');
+  } catch (err) {
+    console.error('Error de conexión:', err.message);
+    process.exit(1);
+  }
+}
+
+// Obtener cronograma con cupos disponibles
+app.get('/api/cronograma', async (req, res) => {
+  try {
+    const result = await pool.request().query(`
+      SELECT
+        cc.id,
+        cc.dia,
+        cc.turno,
+        cc.tipo_persona,
+        cc.cupo,
+        cc.cupo - COUNT(rc.id) AS disponibles
+      FROM Cronograma_Comidas cc
+      LEFT JOIN Reserva_Comidas rc ON cc.id = rc.cronograma_id
+      GROUP BY cc.id, cc.dia, cc.turno, cc.tipo_persona, cc.cupo
+      ORDER BY cc.dia,
+        CASE cc.turno
+          WHEN 'Desayuno' THEN 1
+          WHEN 'Almuerzo' THEN 2
+          WHEN 'Merienda' THEN 3
+          WHEN 'Cena' THEN 4
+        END
+    `);
+    res.json(result.recordset);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Registrar persona + reservar comidas
+app.post('/api/registrar', async (req, res) => {
+  const { nombre, apellido, telefono, tipo_persona, comidas_ids, conferencia_id } = req.body;
+  const transaction = new sql.Transaction(pool);
+
+  try {
+    await transaction.begin();
+    const request = new sql.Request(transaction);
+
+    // Crear persona
+    const personaResult = await request
+      .input('nombre', sql.VarChar(100), nombre)
+      .input('apellido', sql.VarChar(100), apellido)
+      .input('telefono', sql.VarChar(20), telefono)
+      .input('tipo_persona', sql.VarChar(20), tipo_persona)
+      .query(`
+        INSERT INTO Personas (nombre, apellido, telefono, tipo_persona)
+        OUTPUT INSERTED.id
+        VALUES (@nombre, @apellido, @telefono, @tipo_persona)
+      `);
+
+    const personaId = personaResult.recordset[0].id;
+
+    // Inscribir a la conferencia
+    if (conferencia_id) {
+      const reqInsc = new sql.Request(transaction);
+      await reqInsc
+        .input('persona_id', sql.Int, personaId)
+        .input('conferencia_id', sql.Int, conferencia_id)
+        .query('INSERT INTO Inscripciones (persona_id, conferencia_id) VALUES (@persona_id, @conferencia_id)');
+    }
+
+    // Reservar comidas
+    for (const comidaId of comidas_ids) {
+      const reqComida = new sql.Request(transaction);
+
+      // Verificar cupo
+      const cupoResult = await reqComida
+        .input('cronograma_id', sql.Int, comidaId)
+        .query(`
+          SELECT cc.cupo - COUNT(rc.id) AS disponibles, cc.tipo_persona
+          FROM Cronograma_Comidas cc
+          LEFT JOIN Reserva_Comidas rc ON cc.id = rc.cronograma_id
+          WHERE cc.id = @cronograma_id
+          GROUP BY cc.cupo, cc.tipo_persona
+        `);
+
+      if (cupoResult.recordset.length === 0) {
+        await transaction.rollback();
+        return res.status(400).json({ error: `Comida ${comidaId} no encontrada` });
+      }
+
+      const { disponibles, tipo_persona: tipoComida } = cupoResult.recordset[0];
+
+      if (disponibles <= 0) {
+        await transaction.rollback();
+        return res.status(400).json({ error: 'No hay cupo disponible para una de las comidas seleccionadas' });
+      }
+
+      if (tipoComida === 'Pastor' && tipo_persona !== 'Pastor') {
+        await transaction.rollback();
+        return res.status(400).json({ error: 'Esa comida es solo para Pastores' });
+      }
+
+      const reqInsert = new sql.Request(transaction);
+      await reqInsert
+        .input('persona_id', sql.Int, personaId)
+        .input('cronograma_id', sql.Int, comidaId)
+        .query('INSERT INTO Reserva_Comidas (persona_id, cronograma_id) VALUES (@persona_id, @cronograma_id)');
+    }
+
+    await transaction.commit();
+    res.json({ success: true, persona_id: personaId });
+  } catch (err) {
+    try { await transaction.rollback(); } catch (_) {}
+    if (err.message.includes('UQ_Persona_Comida')) {
+      return res.status(400).json({ error: 'Ya estás inscrito en esa comida' });
+    }
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin: ver inscriptos por comida
+app.get('/api/admin/reservas', async (req, res) => {
+  try {
+    const result = await pool.request().query(`
+      SELECT
+        rc.id,
+        p.nombre,
+        p.apellido,
+        p.telefono,
+        p.tipo_persona,
+        cc.dia,
+        cc.turno,
+        rc.fecha_reserva
+      FROM Reserva_Comidas rc
+      JOIN Personas p ON rc.persona_id = p.id
+      JOIN Cronograma_Comidas cc ON rc.cronograma_id = cc.id
+      ORDER BY cc.dia, cc.turno, p.apellido
+    `);
+    res.json(result.recordset);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin: resumen de cupos
+app.get('/api/admin/resumen', async (req, res) => {
+  try {
+    const result = await pool.request().query(`
+      SELECT
+        cc.id,
+        cc.dia,
+        cc.turno,
+        cc.tipo_persona,
+        cc.cupo,
+        COUNT(rc.id) AS inscriptos,
+        cc.cupo - COUNT(rc.id) AS disponibles
+      FROM Cronograma_Comidas cc
+      LEFT JOIN Reserva_Comidas rc ON cc.id = rc.cronograma_id
+      GROUP BY cc.id, cc.dia, cc.turno, cc.tipo_persona, cc.cupo
+      ORDER BY cc.dia,
+        CASE cc.turno
+          WHEN 'Desayuno' THEN 1
+          WHEN 'Almuerzo' THEN 2
+          WHEN 'Merienda' THEN 3
+          WHEN 'Cena' THEN 4
+        END
+    `);
+    res.json(result.recordset);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Eliminar reserva (admin)
+app.delete('/api/admin/reservas/:id', async (req, res) => {
+  try {
+    await pool.request()
+      .input('id', sql.Int, req.params.id)
+      .query('DELETE FROM Reserva_Comidas WHERE id = @id');
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+const path = require('path');
+const frontendPath = path.join(__dirname, '..', 'frontend', 'build');
+const fs = require('fs');
+if (fs.existsSync(frontendPath)) {
+  app.use(express.static(frontendPath));
+  app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(path.join(frontendPath, 'index.html'));
+    }
+  });
+}
+
+const PORT = process.env.PORT || 3001;
+connectDB().then(() => {
+  app.listen(PORT, '0.0.0.0', () => console.log(`API corriendo en http://0.0.0.0:${PORT}`));
+});
