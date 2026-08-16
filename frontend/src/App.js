@@ -144,7 +144,7 @@ function Inscripcion() {
         { id: 9, dia: '2026-09-12T00:00:00.000Z', turno: 'Merienda', tipo_persona: 'Todos', cupo: 100, disponibles: 100 },
         { id: 15, dia: '2026-09-12T00:00:00.000Z', turno: 'Cena', tipo_persona: 'Todos', cupo: 100, disponibles: 100 },
         { id: 10, dia: '2026-09-13T00:00:00.000Z', turno: 'Desayuno', tipo_persona: 'Todos', cupo: 100, disponibles: 100 },
-        { id: 11, dia: '2026-09-13T00:00:00.000Z', turno: 'Cena', tipo_persona: 'Todos', cupo: 100, disponibles: 100 },
+        { id: 11, dia: '2026-09-13T00:00:00.000Z', turno: 'Almuerzo', tipo_persona: 'Todos', cupo: 100, disponibles: 100 },
       ]);
     }
   };
