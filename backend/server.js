@@ -17,7 +17,7 @@ const dbConfig = {
     type: 'default',
     options: {
       userName: process.env.DB_USER || 'sa',
-      password: process.env.DB_PASS || 'BD_2017#Express!'
+      password: process.env.DB_PASS
     }
   }
 };
@@ -192,6 +192,83 @@ app.get('/api/admin/resumen', async (req, res) => {
         END
     `);
     res.json(result.recordset);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Descargar Excel por comida
+app.get('/api/admin/excel/:cronograma_id', async (req, res) => {
+  try {
+    const ExcelJS = require('exceljs');
+    const cronogramaId = req.params.cronograma_id;
+
+    const infoResult = await pool.request()
+      .input('id', sql.Int, cronogramaId)
+      .query('SELECT dia, turno FROM Cronograma_Comidas WHERE id = @id');
+
+    if (infoResult.recordset.length === 0) return res.status(404).json({ error: 'No encontrado' });
+
+    const { dia, turno } = infoResult.recordset[0];
+    const fecha = new Date(dia);
+    const dias = ['Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado'];
+    const nombreArchivo = `${dias[fecha.getDay()]} ${fecha.getDate()} - ${turno}`;
+
+    const personasResult = await pool.request()
+      .input('id', sql.Int, cronogramaId)
+      .query(`
+        SELECT p.id, p.nombre, p.apellido, p.tipo_persona
+        FROM Reserva_Comidas rc
+        JOIN Personas p ON rc.persona_id = p.id
+        WHERE rc.cronograma_id = @id
+        ORDER BY p.tipo_persona, p.apellido
+      `);
+
+    const personas = personasResult.recordset;
+    const pastores = personas.filter(p => p.tipo_persona === 'Pastor');
+    const hermanos = personas.filter(p => p.tipo_persona === 'Hermano' || p.tipo_persona === 'Asistente');
+    const coordinadores = personas.filter(p => p.tipo_persona === 'Coordinador');
+
+    const wb = new ExcelJS.Workbook();
+
+    const crearHoja = (nombre, lista, color) => {
+      const ws = wb.addWorksheet(nombre);
+      ws.getColumn(1).width = 8;
+      ws.getColumn(2).width = 20;
+      ws.getColumn(3).width = 20;
+
+      ws.mergeCells('A1:C1');
+      const contadorCell = ws.getCell('A1');
+      contadorCell.value = `${nombre}: ${lista.length}`;
+      contadorCell.font = { bold: true, size: 14, color: { argb: 'FFFFFFFF' } };
+      contadorCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: color } };
+      contadorCell.alignment = { horizontal: 'center', vertical: 'middle' };
+      ws.getRow(1).height = 30;
+
+      const header = ws.addRow(['ID', 'Nombre', 'Apellido']);
+      header.eachCell(cell => {
+        cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2D2D2D' } };
+        cell.alignment = { horizontal: 'center' };
+      });
+
+      lista.forEach((p, i) => {
+        const row = ws.addRow([i + 1, p.nombre, p.apellido]);
+        row.eachCell(cell => {
+          cell.alignment = { horizontal: 'left' };
+          if (i % 2 === 0) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF5F5F5' } };
+        });
+      });
+    };
+
+    crearHoja('Pastores', pastores, 'FF8B4513');
+    crearHoja('Hermanos', hermanos, 'FF1A5276');
+    crearHoja('Coordinadores', coordinadores, 'FF1E8449');
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename="${nombreArchivo}.xlsx"`);
+    await wb.xlsx.write(res);
+    res.end();
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

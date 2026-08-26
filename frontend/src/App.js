@@ -453,6 +453,7 @@ function AdminPanel({ onVolver }) {
                               <span className="admin-comida-cupo">
                                 <span className={inscriptos > 0 ? 'has-inscriptos' : ''}>{inscriptos}</span>/{c.cupo}
                               </span>
+                              <a href={`${API}/admin/excel/${c.id}`} className="admin-btn-excel" onClick={e => e.stopPropagation()} download>📥 Excel</a>
                             </div>
 
                             {isComidaActive && (

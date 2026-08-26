@@ -962,6 +962,18 @@ select.form-input option {
   padding: 16px;
   font-size: 0.85rem;
 }
+.admin-btn-excel {
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(212,164,74,0.4);
+  color: var(--gold);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.admin-btn-excel:hover { background: var(--gold); color: var(--bg); }
+
 .admin-btn-delete {
   background: none;
   border: 1px solid rgba(239,68,68,0.3);
