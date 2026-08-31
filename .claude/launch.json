@@ -5,6 +5,7 @@
       "name": "congreso-frontend",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["start"],
+      "cwd": "C:\\Users\\Leandro\\AppData\\Local\\Temp\\congreso-app-temp\\frontend",
       "port": 3000
     }
   ]

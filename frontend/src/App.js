@@ -6,6 +6,13 @@ const API = '/api';
 function App() {
   const [page, setPage] = useState(window.location.hash === '#admin' ? 'admin' : 'inicio');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const scrollTo = (id) => {
     setPage('inicio');
@@ -23,9 +30,11 @@ function App() {
 
   return (
     <>
-      <nav className="navbar">
+
+      <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
         <button className="nav-brand" onClick={() => { setPage('inicio'); window.scrollTo(0, 0); }}>
-          MARANATHA
+          <img src="/favicon.png" alt="logo" className="nav-logo" />
+          Iglesia Maranatha
         </button>
 
         <button className="nav-hamburger" onClick={() => setMenuOpen(!menuOpen)}>
@@ -67,7 +76,7 @@ function Hero({ onInscribirse }) {
             <span className="hero-title-main">CONFERENCIA</span>
             <span className="hero-title-accent">Aniversario 65</span>
           </h1>
-          <div className="hero-date">9 — 13 SEPTIEMBRE 2026</div>
+          <div className="hero-date">9 AL 13 DE SEPTIEMBRE 2026</div>
           <div>
             <span className="hero-lema-text">"Sere ungido</span>
             <span className="hero-lema-accent">con aceite fresco"</span>
@@ -99,12 +108,26 @@ function Hero({ onInscribirse }) {
 function Intro() {
   return (
     <section className="intro">
+      <div className="intro-glow" />
       <div className="container">
+        <div className="intro-badge">65 años de historia</div>
         <p>
           La Iglesia Centro Evangelistico Maranatha celebra 65 años de historia, fe, servicio
           y fidelidad de Dios. En esta conferencia nos reunimos para celebrar lo que Dios ha
           hecho y renovar nuestro compromiso con Su propósito.
         </p>
+        <div className="intro-divider">
+          <span className="intro-divider-line" />
+          <span className="intro-divider-icon">✦</span>
+          <span className="intro-divider-line" />
+        </div>
+        <div className="intro-stats">
+          <div className="intro-stat"><span className="intro-stat-num">65</span><span className="intro-stat-label">Años</span></div>
+          <div className="intro-stat-sep" />
+          <div className="intro-stat"><span className="intro-stat-num">9–13</span><span className="intro-stat-label">Septiembre</span></div>
+          <div className="intro-stat-sep" />
+          <div className="intro-stat"><span className="intro-stat-num">Salta</span><span className="intro-stat-label">Argentina</span></div>
+        </div>
       </div>
     </section>
   );
@@ -130,7 +153,6 @@ function Inscripcion() {
     } catch {
       // Datos de prueba mientras no hay conexión al servidor
       setCronograma([
-        { id: 0, dia: '2026-09-09T00:00:00.000Z', turno: 'Cena', tipo_persona: 'Pastor', cupo: 50, disponibles: 50 },
         { id: 1, dia: '2026-09-10T00:00:00.000Z', turno: 'Desayuno', tipo_persona: 'Todos', cupo: 100, disponibles: 99 },
         { id: 2, dia: '2026-09-10T00:00:00.000Z', turno: 'Almuerzo', tipo_persona: 'Todos', cupo: 100, disponibles: 99 },
         { id: 3, dia: '2026-09-10T00:00:00.000Z', turno: 'Merienda', tipo_persona: 'Todos', cupo: 100, disponibles: 100 },
@@ -292,7 +314,7 @@ function Inscripcion() {
 /* ====== UBICACIÓN ====== */
 function Ubicacion() {
   return (
-    <section id="ubicacion" className="ubicacion-section">
+    <section id="ubicacion" className="ubicacion-section" style={{ '--iglesia2-bg': `url(${process.env.PUBLIC_URL}/iglesia2.png)` }}>
       <div className="container">
         <div className="section-eyebrow">Donde estamos</div>
         <h2 className="section-title">Encontranos</h2>
@@ -317,17 +339,21 @@ function Ubicacion() {
 function Contacto() {
   return (
     <section id="contacto" className="contacto-section">
+      <div className="contacto-glow" />
       <div className="container">
         <div className="section-eyebrow">Comunicate</div>
         <h2 className="section-title">Estamos para <span className="gold">recibirte</span></h2>
         <p className="ubicacion-nombre">Iglesia Centro Evangelistico Maranatha</p>
-        <p className="ubicacion-dir">Cordoba 867</p>
+        <p className="ubicacion-dir">Cordoba 867, Salta</p>
         <div className="contacto-redes">
-          <span>WhatsApp</span>
-          <span>Telefono</span>
-          <span>Instagram</span>
-          <span>Facebook</span>
-          <span>Correo electronico</span>
+          <a href="https://www.instagram.com/iglesiamaranathasalta/" target="_blank" rel="noreferrer" className="contacto-btn contacto-btn-ig">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+            Instagram
+          </a>
+          <a href="https://www.facebook.com/MCMMSalta/" target="_blank" rel="noreferrer" className="contacto-btn contacto-btn-fb">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            Facebook
+          </a>
         </div>
       </div>
     </section>
