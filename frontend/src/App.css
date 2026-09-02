@@ -201,7 +201,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 72px; }
 
 @keyframes aceiteFloat {
   0%, 100% { transform: translateY(-50%) translateX(0); }
-  50% { transform: translateY(-52%) translateX(5px); }
+  50% { transform: translateY(-50.5%) translateX(2px); }
 }
 
 /* Gotas de aceite animadas */
@@ -358,12 +358,17 @@ html { scroll-behavior: smooth; scroll-padding-top: 72px; }
   .hero-title-main { font-size: 2.4rem; letter-spacing: -0.5px; }
   .hero-title-accent { font-size: 2rem; }
   .hero-aceite { display: none; }
+  .oil-drops { display: none; }
   .hero-eyebrow { font-size: 0.72rem; letter-spacing: 2px; }
+  .hero-date { font-size: 0.65rem; letter-spacing: 2px; }
+  .hero-date-sep { margin: 0 8px; }
   .hero-lema-text { font-size: 1.4rem; }
   .hero-lema-accent { font-size: 1.6rem; }
+  .hero-ref { font-size: 0.85rem; letter-spacing: 2px; }
   .hero-buttons { flex-direction: column; align-items: center; }
   .hero-buttons .btn-primary,
   .hero-buttons .btn-outline { width: 100%; max-width: 280px; justify-content: center; }
+  .contacto-btn { padding: 12px 24px; font-size: 0.82rem; }
 }
 @media (max-width: 480px) {
   .hero-title-main { font-size: 2rem; }
@@ -460,9 +465,16 @@ section { padding: 100px 0; }
   line-height: 1.8;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
   section { padding: 60px 0; }
-  .section-title { font-size: 1.8rem; }
+  .section-eyebrow { font-size: 2rem; letter-spacing: 1px; }
+  .section-title { font-size: 1.5rem; }
+  .section-desc { font-size: 0.85rem; margin-bottom: 32px; }
+}
+@media (max-width: 480px) {
+  section { padding: 48px 0; }
+  .section-title { font-size: 1.3rem; }
+  .section-eyebrow { font-size: 1.6rem; }
 }
 
 /* ====== INTRO ====== */
@@ -889,9 +901,9 @@ select.form-input option {
   animation: bgDrift 12s ease-in-out infinite;
 }
 @keyframes bgDrift {
-  0%, 100% { transform: scale(1.05) translateX(0px) translateY(0px); }
-  33% { transform: scale(1.08) translateX(-8px) translateY(-4px); }
-  66% { transform: scale(1.06) translateX(6px) translateY(-6px); }
+  0%, 100% { transform: scale(1.02) translateX(0px) translateY(0px); }
+  33% { transform: scale(1.03) translateX(-3px) translateY(-2px); }
+  66% { transform: scale(1.02) translateX(2px) translateY(-2px); }
 }
 .ubicacion-section::after {
   content: '';
