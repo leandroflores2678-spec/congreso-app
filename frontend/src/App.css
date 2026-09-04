@@ -359,8 +359,11 @@ html { scroll-behavior: smooth; scroll-padding-top: 72px; }
   .hero-aceite { left: -100px; opacity: 0.25; height: 55vh; }
 }
 @media (max-width: 768px) {
-  .hero-aceite { display: none !important; }
+  .hero-aceite { height: 45vh; max-height: 350px; opacity: 0.3; left: -40px; }
   .oil-drops { display: none !important; }
+}
+@media (max-width: 480px) {
+  .hero-aceite { height: 35vh; max-height: 280px; opacity: 0.2; left: -50px; }
 }
 @media (max-width: 600px) {
   .hero-title-main { font-size: 2.4rem; letter-spacing: -0.5px; }
