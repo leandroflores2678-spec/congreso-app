@@ -188,8 +188,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 72px; }
 .hero-aceite {
   position: absolute;
   left: -5px;
-  top: 50%;
-  transform: translate3d(0, -50%, 0);
+  top: 10px;
   height: 85vh;
   max-height: 700px;
   z-index: 2;
@@ -202,8 +201,8 @@ html { scroll-behavior: smooth; scroll-padding-top: 72px; }
 }
 
 @keyframes aceiteFloat {
-  0%, 100% { transform: translate3d(0px, -50%, 0); }
-  50% { transform: translate3d(4px, -51.5%, 0); }
+  0%, 100% { transform: translate3d(0px, 0, 0); }
+  50% { transform: translate3d(4px, -8px, 0); }
 }
 
 /* Gotas de aceite animadas */
@@ -359,7 +358,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 72px; }
   .hero-aceite { left: -100px; opacity: 0.25; height: 55vh; }
 }
 @media (max-width: 768px) {
-  .hero-aceite { height: 35vh; max-height: 280px; opacity: 0.25; left: -30px; }
+  .hero-aceite { height: 35vh; max-height: 280px; opacity: 0.25; left: -30px; top: 60px; }
   .oil-drops { opacity: 0.4; }
   .oil-drop { width: 3px !important; height: 3px !important; }
   .drop-1 { left: 5%; }
