@@ -193,9 +193,8 @@ html { scroll-behavior: smooth; scroll-padding-top: 72px; }
   height: 95vh;
   max-height: 750px;
   z-index: 2;
-  opacity: 0.9;
-  filter: drop-shadow(0 0 60px rgba(212,164,74,0.3));
-  animation: aceiteFloat 12s ease-in-out infinite;
+  opacity: 0.85;
+  animation: aceiteFloat 30s ease-in-out infinite;
   will-change: transform;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
@@ -203,8 +202,8 @@ html { scroll-behavior: smooth; scroll-padding-top: 72px; }
 }
 
 @keyframes aceiteFloat {
-  0%, 100% { transform: translate3d(0, -50%, 0); }
-  50% { transform: translate3d(3px, -51%, 0); }
+  0%, 100% { transform: translate3d(0, -50%, 0); opacity: 0.85; }
+  50% { transform: translate3d(0, -50%, 0); opacity: 0.75; }
 }
 
 /* Gotas de aceite animadas */
