@@ -189,19 +189,22 @@ html { scroll-behavior: smooth; scroll-padding-top: 72px; }
   position: absolute;
   left: -5px;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translate3d(0, -50%, 0);
   height: 95vh;
   max-height: 750px;
   z-index: 2;
   opacity: 0.9;
   filter: drop-shadow(0 0 60px rgba(212,164,74,0.3));
-  animation: aceiteFloat 20s ease-in-out infinite;
+  animation: aceiteFloat 12s ease-in-out infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   pointer-events: none;
 }
 
 @keyframes aceiteFloat {
-  0%, 100% { transform: translateY(-50%) translateX(0); }
-  50% { transform: translateY(-50.2%) translateX(1px); }
+  0%, 100% { transform: translate3d(0, -50%, 0); }
+  50% { transform: translate3d(3px, -51%, 0); }
 }
 
 /* Gotas de aceite animadas */
@@ -222,6 +225,8 @@ html { scroll-behavior: smooth; scroll-padding-top: 72px; }
   opacity: 0;
   animation: dropFall linear infinite;
   filter: blur(0.5px);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
 .drop-1 { left: 8%; animation-duration: 8s; animation-delay: 0s; width: 5px; height: 5px; }
@@ -352,13 +357,15 @@ html { scroll-behavior: smooth; scroll-padding-top: 72px; }
 @media (max-width: 900px) {
   .hero-title-main { font-size: 3rem; letter-spacing: -1px; }
   .hero-title-accent { font-size: 2.8rem; }
-  .hero-aceite { left: -100px; opacity: 0.35; height: 65vh; }
+  .hero-aceite { left: -100px; opacity: 0.25; height: 55vh; }
+}
+@media (max-width: 768px) {
+  .hero-aceite { display: none !important; }
+  .oil-drops { display: none !important; }
 }
 @media (max-width: 600px) {
   .hero-title-main { font-size: 2.4rem; letter-spacing: -0.5px; }
   .hero-title-accent { font-size: 2rem; }
-  .hero-aceite { display: none; }
-  .oil-drops { display: none; }
   .hero-eyebrow { font-size: 0.72rem; letter-spacing: 2px; }
   .hero-date { font-size: 0.65rem; letter-spacing: 2px; }
   .hero-date-sep { margin: 0 8px; }
@@ -898,12 +905,13 @@ select.form-input option {
   opacity: 0.55;
   z-index: 0;
   filter: sepia(30%) brightness(0.8);
-  animation: bgDrift 12s ease-in-out infinite;
+  animation: bgDrift 20s ease-in-out infinite;
+  will-change: transform;
 }
 @keyframes bgDrift {
-  0%, 100% { transform: scale(1.02) translateX(0px) translateY(0px); }
-  33% { transform: scale(1.03) translateX(-3px) translateY(-2px); }
-  66% { transform: scale(1.02) translateX(2px) translateY(-2px); }
+  0%, 100% { transform: scale3d(1.02, 1.02, 1) translate3d(0, 0, 0); }
+  33% { transform: scale3d(1.03, 1.03, 1) translate3d(-3px, -2px, 0); }
+  66% { transform: scale3d(1.02, 1.02, 1) translate3d(2px, -2px, 0); }
 }
 .ubicacion-section::after {
   content: '';
