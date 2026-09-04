@@ -190,11 +190,11 @@ html { scroll-behavior: smooth; scroll-padding-top: 72px; }
   left: -5px;
   top: 50%;
   transform: translate3d(0, -50%, 0);
-  height: 95vh;
-  max-height: 750px;
+  height: 85vh;
+  max-height: 700px;
   z-index: 2;
-  opacity: 0.85;
-  animation: aceiteFloat 30s ease-in-out infinite;
+  opacity: 0.9;
+  animation: aceiteFloat 8s ease-in-out infinite;
   will-change: transform;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
@@ -202,8 +202,8 @@ html { scroll-behavior: smooth; scroll-padding-top: 72px; }
 }
 
 @keyframes aceiteFloat {
-  0%, 100% { transform: translate3d(0, -50%, 0); opacity: 0.85; }
-  50% { transform: translate3d(0, -50%, 0); opacity: 0.75; }
+  0%, 100% { transform: translate3d(0px, -50%, 0); }
+  50% { transform: translate3d(4px, -51.5%, 0); }
 }
 
 /* Gotas de aceite animadas */
@@ -359,17 +359,17 @@ html { scroll-behavior: smooth; scroll-padding-top: 72px; }
   .hero-aceite { left: -100px; opacity: 0.25; height: 55vh; }
 }
 @media (max-width: 768px) {
-  .hero-aceite { height: 40vh; max-height: 320px; opacity: 0.35; left: 50%; transform: translate3d(-50%, -50%, 0); }
-  .oil-drops { opacity: 0.5; }
-  .oil-drop { width: 4px !important; height: 4px !important; }
-  .drop-1 { left: 30%; }
-  .drop-2 { left: 50%; }
-  .drop-3 { left: 20%; }
-  .drop-4 { left: 60%; }
-  .drop-5 { left: 40%; }
+  .hero-aceite { height: 35vh; max-height: 280px; opacity: 0.25; left: -30px; }
+  .oil-drops { opacity: 0.4; }
+  .oil-drop { width: 3px !important; height: 3px !important; }
+  .drop-1 { left: 5%; }
+  .drop-2 { left: 10%; }
+  .drop-3 { left: 3%; }
+  .drop-4 { left: 12%; }
+  .drop-5 { left: 8%; }
 }
 @media (max-width: 480px) {
-  .hero-aceite { height: 35vh; max-height: 260px; opacity: 0.25; }
+  .hero-aceite { height: 28vh; max-height: 220px; opacity: 0.2; left: -40px; }
 }
 @media (max-width: 600px) {
   .hero-title-main { font-size: 2.4rem; letter-spacing: -0.5px; }
