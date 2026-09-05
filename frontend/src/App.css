@@ -193,16 +193,18 @@ html { scroll-behavior: smooth; scroll-padding-top: 72px; }
   max-height: 700px;
   z-index: 2;
   opacity: 0.9;
-  animation: aceiteFloat 8s ease-in-out infinite;
-  will-change: transform;
+  animation: aceiteFloat 12s ease-in-out infinite;
+  transform: translate3d(0, 0, 0);
+  will-change: transform, opacity;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   pointer-events: none;
+  image-rendering: auto;
 }
 
 @keyframes aceiteFloat {
-  0%, 100% { transform: translate3d(0px, 0, 0); }
-  50% { transform: translate3d(4px, -8px, 0); }
+  0%, 100% { transform: translate3d(0, 0, 0); opacity: 0.9; }
+  50% { transform: translate3d(0, -6px, 0); opacity: 0.82; }
 }
 
 /* Gotas de aceite animadas */
@@ -352,24 +354,39 @@ html { scroll-behavior: smooth; scroll-padding-top: 72px; }
 
 .hero-buttons { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
 
-@media (max-width: 900px) {
-  .hero-title-main { font-size: 3rem; letter-spacing: -1px; }
-  .hero-title-accent { font-size: 2.8rem; }
-  .hero-aceite { left: -100px; opacity: 0.25; height: 55vh; }
+/* Large screens 1200px+ */
+@media (min-width: 1200px) {
+  .hero-aceite { height: 85vh; max-height: 750px; left: -5px; }
+  .hero-content { max-width: 1200px; }
 }
+/* Extra large 1920px+ */
+@media (min-width: 1920px) {
+  .hero-aceite { height: 80vh; max-height: 900px; left: 20px; }
+  .hero-title-main { font-size: 9rem; }
+  .hero-title-accent { font-size: 9rem; }
+  .hero-content { max-width: 1400px; }
+}
+/* Laptops max 992px */
+@media (max-width: 992px) {
+  .hero-title-main { font-size: 5rem; letter-spacing: -2px; }
+  .hero-title-accent { font-size: 4.5rem; }
+  .hero-aceite { left: -15px; opacity: 0.9; height: 75vh; max-height: 600px; }
+}
+/* Tablets max 768px */
 @media (max-width: 768px) {
-  .hero-aceite { height: 35vh; max-height: 280px; opacity: 0.25; left: -30px; top: 60px; }
-  .oil-drops { opacity: 0.4; }
-  .oil-drop { width: 3px !important; height: 3px !important; }
+  .hero-title-main { font-size: 3.5rem; letter-spacing: -1px; }
+  .hero-title-accent { font-size: 3rem; }
+  .hero-aceite { height: 60vh; max-height: 450px; opacity: 0.85; left: -20px; top: 20px; }
+  .hero-eyebrow { font-size: 0.85rem; letter-spacing: 3px; }
+  .oil-drops { opacity: 0.6; }
+  .oil-drop { width: 4px !important; height: 4px !important; }
   .drop-1 { left: 5%; }
   .drop-2 { left: 10%; }
   .drop-3 { left: 3%; }
   .drop-4 { left: 12%; }
   .drop-5 { left: 8%; }
 }
-@media (max-width: 480px) {
-  .hero-aceite { height: 28vh; max-height: 220px; opacity: 0.2; left: -40px; }
-}
+/* Phones max 600px */
 @media (max-width: 600px) {
   .hero-title-main { font-size: 2.4rem; letter-spacing: -0.5px; }
   .hero-title-accent { font-size: 2rem; }
@@ -379,12 +396,16 @@ html { scroll-behavior: smooth; scroll-padding-top: 72px; }
   .hero-lema-text { font-size: 1.4rem; }
   .hero-lema-accent { font-size: 1.6rem; }
   .hero-ref { font-size: 0.85rem; letter-spacing: 2px; }
+  .hero-aceite { height: 45vh; max-height: 340px; opacity: 0.85; left: -20px; top: 30px; }
   .hero-buttons { flex-direction: column; align-items: center; }
   .hero-buttons .btn-primary,
   .hero-buttons .btn-outline { width: 100%; max-width: 280px; justify-content: center; }
   .contacto-btn { padding: 12px 24px; font-size: 0.82rem; }
+  .oil-drop { width: 3px !important; height: 3px !important; }
 }
-@media (max-width: 480px) {
+/* Small phones max 400px */
+@media (max-width: 400px) {
+  .hero-aceite { height: 35vh; max-height: 260px; opacity: 0.8; left: -15px; }
   .hero-title-main { font-size: 2rem; }
   .hero-title-accent { font-size: 1.7rem; }
 }
@@ -479,13 +500,21 @@ section { padding: 100px 0; }
   line-height: 1.8;
 }
 
+/* Tablets */
+@media (max-width: 768px) {
+  section { padding: 72px 0; }
+  .section-eyebrow { font-size: 2.5rem; }
+  .section-title { font-size: 1.7rem; }
+}
+/* Phones */
 @media (max-width: 600px) {
   section { padding: 60px 0; }
   .section-eyebrow { font-size: 2rem; letter-spacing: 1px; }
   .section-title { font-size: 1.5rem; }
   .section-desc { font-size: 0.85rem; margin-bottom: 32px; }
 }
-@media (max-width: 480px) {
+/* Small phones */
+@media (max-width: 400px) {
   section { padding: 48px 0; }
   .section-title { font-size: 1.3rem; }
   .section-eyebrow { font-size: 1.6rem; }
@@ -916,9 +945,8 @@ select.form-input option {
   will-change: transform;
 }
 @keyframes bgDrift {
-  0%, 100% { transform: scale3d(1.02, 1.02, 1) translate3d(0, 0, 0); }
-  33% { transform: scale3d(1.03, 1.03, 1) translate3d(-3px, -2px, 0); }
-  66% { transform: scale3d(1.02, 1.02, 1) translate3d(2px, -2px, 0); }
+  0%, 100% { transform: scale(1.02); }
+  50% { transform: scale(1.04); }
 }
 .ubicacion-section::after {
   content: '';
@@ -1215,6 +1243,39 @@ select.form-input option {
   .admin-stats { flex-direction: column; }
   .admin-persona-header, .admin-persona-row { grid-template-columns: 1fr 1fr 40px; }
   .admin-persona-header span:nth-child(2), .admin-persona-row span:nth-child(2) { display: none; }
+}
+
+/* ====== PANTALLAS GRANDES ====== */
+@media (min-width: 1200px) {
+  .container { max-width: 1100px; }
+  .section-eyebrow { font-size: 3.5rem; }
+  .section-title { font-size: 2rem; }
+  .info-grid { gap: 60px; }
+  .inscripcion-card { max-width: 640px; }
+  .map-wrapper { max-width: 800px; }
+}
+@media (min-width: 1440px) {
+  .container { max-width: 1200px; }
+  .section-eyebrow { font-size: 4rem; }
+  .section-title { font-size: 2.2rem; }
+  .section-desc { font-size: 1rem; max-width: 640px; }
+  .info-number { font-size: 10rem; }
+  .info-label { font-size: 2.2rem; }
+  .inscripcion-card { max-width: 680px; padding: 48px 44px; }
+  .map-wrapper { max-width: 900px; }
+  .map-wrapper iframe { height: 380px; }
+}
+@media (min-width: 1920px) {
+  .container { max-width: 1400px; }
+  .section-eyebrow { font-size: 4.5rem; }
+  .section-title { font-size: 2.5rem; }
+  .section-desc { font-size: 1.05rem; max-width: 700px; }
+  .info-number { font-size: 11rem; }
+  .inscripcion-card { max-width: 720px; }
+  .map-wrapper { max-width: 1000px; }
+  .map-wrapper iframe { height: 420px; }
+  .intro p { font-size: 1.15rem; max-width: 700px; }
+  .contacto-btn { padding: 16px 36px; font-size: 1rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
