@@ -4,6 +4,17 @@ const cors = require('cors');
 const sql = require('mssql');
 
 const app = express();
+
+// Proteger contra URLs malformadas de bots/escáneres
+app.use((req, res, next) => {
+  try {
+    decodeURIComponent(req.path);
+    next();
+  } catch (e) {
+    res.status(400).end();
+  }
+});
+
 app.use(cors());
 app.use(express.json());
 
