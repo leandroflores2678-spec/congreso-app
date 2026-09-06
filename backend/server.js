@@ -4,29 +4,6 @@ const cors = require('cors');
 const sql = require('mssql');
 
 const app = express();
-app.set('trust proxy', true);
-
-// Debug: ver qué hostname recibe el servidor
-app.get('/api/debug-host', (req, res) => {
-  res.json({
-    hostname: req.hostname,
-    host: req.headers.host,
-    xForwardedHost: req.headers['x-forwarded-host'],
-    xForwardedFor: req.headers['x-forwarded-for'],
-    url: req.url
-  });
-});
-
-// Proteger contra URLs malformadas de bots/escáneres
-app.use((req, res, next) => {
-  try {
-    decodeURIComponent(req.path);
-    next();
-  } catch (e) {
-    res.status(400).end();
-  }
-});
-
 app.use(cors());
 app.use(express.json());
 
@@ -312,24 +289,22 @@ app.delete('/api/admin/reservas/:id', async (req, res) => {
   }
 });
 
+// Debug temporal
+app.get('/api/debug-host', (req, res) => {
+  res.json({ hostname: req.hostname, host: req.headers.host });
+});
+
 const path = require('path');
 const frontendPath = path.join(__dirname, '..', 'frontend', 'build');
 const fs = require('fs');
 if (fs.existsSync(frontendPath)) {
-  const indexHtml = fs.readFileSync(path.join(frontendPath, 'index.html'), 'utf8');
-  const adminScript = '<head><script>if(!window.location.hash.includes("admin"))window.location.hash="admin";</script>';
-  const adminHtml = indexHtml.replace('<head>', adminScript);
-
-  app.use((req, res, next) => {
-    const host = req.hostname || '';
-    if (host.startsWith('admin.') && !req.path.startsWith('/api') && !req.path.match(/\.\w+$/)) {
-      return res.send(adminHtml);
-    }
-    next();
-  });
   app.use(express.static(frontendPath));
   app.get('*', (req, res) => {
     if (!req.path.startsWith('/api')) {
+      const host = req.headers.host || '';
+      if (host.startsWith('admin.')) {
+        return res.send(fs.readFileSync(path.join(frontendPath, 'index.html'), 'utf8').replace('</head>', '<script>window.location.hash="admin";</script></head>'));
+      }
       res.sendFile(path.join(frontendPath, 'index.html'));
     }
   });
