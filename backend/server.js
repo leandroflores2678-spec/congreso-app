@@ -4,6 +4,18 @@ const cors = require('cors');
 const sql = require('mssql');
 
 const app = express();
+app.set('trust proxy', true);
+
+// Debug: ver qué hostname recibe el servidor
+app.get('/api/debug-host', (req, res) => {
+  res.json({
+    hostname: req.hostname,
+    host: req.headers.host,
+    xForwardedHost: req.headers['x-forwarded-host'],
+    xForwardedFor: req.headers['x-forwarded-for'],
+    url: req.url
+  });
+});
 
 // Proteger contra URLs malformadas de bots/escáneres
 app.use((req, res, next) => {
