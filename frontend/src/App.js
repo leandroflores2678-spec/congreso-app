@@ -153,20 +153,20 @@ function Inscripcion() {
     } catch {
       // Datos de prueba mientras no hay conexión al servidor
       setCronograma([
-        { id: 1, dia: '2026-09-10T00:00:00.000Z', turno: 'Desayuno', tipo_persona: 'Todos', cupo: 100, disponibles: 99 },
-        { id: 2, dia: '2026-09-10T00:00:00.000Z', turno: 'Almuerzo', tipo_persona: 'Todos', cupo: 100, disponibles: 99 },
-        { id: 3, dia: '2026-09-10T00:00:00.000Z', turno: 'Merienda', tipo_persona: 'Todos', cupo: 100, disponibles: 100 },
-        { id: 16, dia: '2026-09-10T00:00:00.000Z', turno: 'Cena', tipo_persona: 'Todos', cupo: 100, disponibles: 100 },
-        { id: 4, dia: '2026-09-11T00:00:00.000Z', turno: 'Desayuno', tipo_persona: 'Todos', cupo: 100, disponibles: 100 },
-        { id: 5, dia: '2026-09-11T00:00:00.000Z', turno: 'Almuerzo', tipo_persona: 'Todos', cupo: 100, disponibles: 100 },
-        { id: 6, dia: '2026-09-11T00:00:00.000Z', turno: 'Merienda', tipo_persona: 'Todos', cupo: 100, disponibles: 100 },
-        { id: 14, dia: '2026-09-11T00:00:00.000Z', turno: 'Cena', tipo_persona: 'Todos', cupo: 100, disponibles: 100 },
-        { id: 7, dia: '2026-09-12T00:00:00.000Z', turno: 'Desayuno', tipo_persona: 'Todos', cupo: 100, disponibles: 100 },
-        { id: 8, dia: '2026-09-12T00:00:00.000Z', turno: 'Almuerzo', tipo_persona: 'Todos', cupo: 100, disponibles: 100 },
-        { id: 9, dia: '2026-09-12T00:00:00.000Z', turno: 'Merienda', tipo_persona: 'Todos', cupo: 100, disponibles: 100 },
-        { id: 15, dia: '2026-09-12T00:00:00.000Z', turno: 'Cena', tipo_persona: 'Todos', cupo: 100, disponibles: 100 },
-        { id: 10, dia: '2026-09-13T00:00:00.000Z', turno: 'Desayuno', tipo_persona: 'Todos', cupo: 100, disponibles: 100 },
-        { id: 11, dia: '2026-09-13T00:00:00.000Z', turno: 'Almuerzo', tipo_persona: 'Todos', cupo: 100, disponibles: 100 },
+        { id: 1, dia: '2026-09-10T00:00:00.000Z', turno: 'Desayuno', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
+        { id: 2, dia: '2026-09-10T00:00:00.000Z', turno: 'Almuerzo', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
+        { id: 3, dia: '2026-09-10T00:00:00.000Z', turno: 'Merienda', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
+        { id: 16, dia: '2026-09-10T00:00:00.000Z', turno: 'Cena', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
+        { id: 4, dia: '2026-09-11T00:00:00.000Z', turno: 'Desayuno', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
+        { id: 5, dia: '2026-09-11T00:00:00.000Z', turno: 'Almuerzo', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
+        { id: 6, dia: '2026-09-11T00:00:00.000Z', turno: 'Merienda', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
+        { id: 14, dia: '2026-09-11T00:00:00.000Z', turno: 'Cena', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
+        { id: 7, dia: '2026-09-12T00:00:00.000Z', turno: 'Desayuno', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
+        { id: 8, dia: '2026-09-12T00:00:00.000Z', turno: 'Almuerzo', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
+        { id: 9, dia: '2026-09-12T00:00:00.000Z', turno: 'Merienda', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
+        { id: 15, dia: '2026-09-12T00:00:00.000Z', turno: 'Cena', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
+        { id: 10, dia: '2026-09-13T00:00:00.000Z', turno: 'Desayuno', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
+        { id: 11, dia: '2026-09-13T00:00:00.000Z', turno: 'Almuerzo', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
       ]);
     }
   };
@@ -265,7 +265,8 @@ function Inscripcion() {
                 <select className="form-input" value={form.tipo_persona} onChange={e => setForm({ ...form, tipo_persona: e.target.value })}>
                   <option value="Hermano">Hermano</option>
                   <option value="Pastor">Pastor</option>
-                  <option value="Coordinador">Coordinador</option>
+                  <option value="Colaborador">Colaborador</option>
+                  <option value="Invitado">Invitado</option>
                 </select>
               </div>
             </div>

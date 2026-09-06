@@ -228,7 +228,8 @@ app.get('/api/admin/excel/:cronograma_id', async (req, res) => {
     const personas = personasResult.recordset;
     const pastores = personas.filter(p => p.tipo_persona === 'Pastor');
     const hermanos = personas.filter(p => p.tipo_persona === 'Hermano' || p.tipo_persona === 'Asistente');
-    const coordinadores = personas.filter(p => p.tipo_persona === 'Coordinador');
+    const colaboradores = personas.filter(p => p.tipo_persona === 'Colaborador');
+    const invitados = personas.filter(p => p.tipo_persona === 'Invitado');
 
     const wb = new ExcelJS.Workbook();
 
@@ -264,7 +265,8 @@ app.get('/api/admin/excel/:cronograma_id', async (req, res) => {
 
     crearHoja('Pastores', pastores, 'FF8B4513');
     crearHoja('Hermanos', hermanos, 'FF1A5276');
-    crearHoja('Coordinadores', coordinadores, 'FF1E8449');
+    crearHoja('Colaboradores', colaboradores, 'FF1E8449');
+    crearHoja('Invitados', invitados, 'FF7D3C98');
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', `attachment; filename="${nombreArchivo}.xlsx"`);
