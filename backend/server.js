@@ -298,6 +298,13 @@ const path = require('path');
 const frontendPath = path.join(__dirname, '..', 'frontend', 'build');
 const fs = require('fs');
 if (fs.existsSync(frontendPath)) {
+  app.get('/', (req, res, next) => {
+    if ((req.headers.host || '').startsWith('admin.')) {
+      var html = fs.readFileSync(path.join(frontendPath, 'index.html'), 'utf8');
+      return res.send(html.replace('</head>', '<script>window.location.hash="admin";</script></head>'));
+    }
+    next();
+  });
   app.use(express.static(frontendPath));
   app.get('*', (req, res) => {
     if (!req.path.startsWith('/api')) {
