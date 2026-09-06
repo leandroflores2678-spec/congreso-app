@@ -296,6 +296,10 @@ if (fs.existsSync(frontendPath)) {
   app.use(express.static(frontendPath));
   app.get('*', (req, res) => {
     if (!req.path.startsWith('/api')) {
+      const host = req.hostname || '';
+      if (host.startsWith('admin.') && req.path === '/') {
+        return res.redirect('/#admin');
+      }
       res.sendFile(path.join(frontendPath, 'index.html'));
     }
   });
