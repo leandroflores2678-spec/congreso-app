@@ -293,13 +293,17 @@ const path = require('path');
 const frontendPath = path.join(__dirname, '..', 'frontend', 'build');
 const fs = require('fs');
 if (fs.existsSync(frontendPath)) {
+  // Subdominio admin: redirige al panel de administracion
+  app.use((req, res, next) => {
+    const host = req.hostname || '';
+    if (host.startsWith('admin.') && req.path === '/' && !req.path.startsWith('/api')) {
+      return res.send(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Admin</title></head><body><script>window.location.replace(window.location.origin + '/#admin');</script></body></html>`);
+    }
+    next();
+  });
   app.use(express.static(frontendPath));
   app.get('*', (req, res) => {
     if (!req.path.startsWith('/api')) {
-      const host = req.hostname || '';
-      if (host.startsWith('admin.') && req.path === '/') {
-        return res.redirect('/#admin');
-      }
       res.sendFile(path.join(frontendPath, 'index.html'));
     }
   });
