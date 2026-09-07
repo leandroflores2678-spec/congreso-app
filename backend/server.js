@@ -226,47 +226,36 @@ app.get('/api/admin/excel/:cronograma_id', async (req, res) => {
       `);
 
     const personas = personasResult.recordset;
-    const pastores = personas.filter(p => p.tipo_persona === 'Pastor');
-    const hermanos = personas.filter(p => p.tipo_persona === 'Hermano' || p.tipo_persona === 'Asistente');
-    const colaboradores = personas.filter(p => p.tipo_persona === 'Colaborador');
-    const invitados = personas.filter(p => p.tipo_persona === 'Invitado');
-
     const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet('Inscriptos');
 
-    const crearHoja = (nombre, lista, color) => {
-      const ws = wb.addWorksheet(nombre);
-      ws.getColumn(1).width = 8;
-      ws.getColumn(2).width = 20;
-      ws.getColumn(3).width = 20;
+    ws.getColumn(1).width = 6;
+    ws.getColumn(2).width = 22;
+    ws.getColumn(3).width = 22;
+    ws.getColumn(4).width = 16;
 
-      ws.mergeCells('A1:C1');
-      const contadorCell = ws.getCell('A1');
-      contadorCell.value = `${nombre}: ${lista.length}`;
-      contadorCell.font = { bold: true, size: 14, color: { argb: 'FFFFFFFF' } };
-      contadorCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: color } };
-      contadorCell.alignment = { horizontal: 'center', vertical: 'middle' };
-      ws.getRow(1).height = 30;
+    ws.mergeCells('A1:D1');
+    const titulo = ws.getCell('A1');
+    titulo.value = `${nombreArchivo} - Total: ${personas.length}`;
+    titulo.font = { bold: true, size: 14, color: { argb: 'FFFFFFFF' } };
+    titulo.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1A5276' } };
+    titulo.alignment = { horizontal: 'center', vertical: 'middle' };
+    ws.getRow(1).height = 30;
 
-      const header = ws.addRow(['ID', 'Nombre', 'Apellido']);
-      header.eachCell(cell => {
-        cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2D2D2D' } };
-        cell.alignment = { horizontal: 'center' };
+    const header = ws.addRow(['#', 'Nombre', 'Apellido', 'Rol']);
+    header.eachCell(cell => {
+      cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2D2D2D' } };
+      cell.alignment = { horizontal: 'center' };
+    });
+
+    personas.forEach((p, i) => {
+      const row = ws.addRow([i + 1, p.nombre, p.apellido, p.tipo_persona]);
+      row.eachCell(cell => {
+        cell.alignment = { horizontal: 'left' };
+        if (i % 2 === 0) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF5F5F5' } };
       });
-
-      lista.forEach((p, i) => {
-        const row = ws.addRow([i + 1, p.nombre, p.apellido]);
-        row.eachCell(cell => {
-          cell.alignment = { horizontal: 'left' };
-          if (i % 2 === 0) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF5F5F5' } };
-        });
-      });
-    };
-
-    crearHoja('Pastores', pastores, 'FF8B4513');
-    crearHoja('Hermanos', hermanos, 'FF1A5276');
-    crearHoja('Colaboradores', colaboradores, 'FF1E8449');
-    crearHoja('Invitados', invitados, 'FF7D3C98');
+    });
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', `attachment; filename="${nombreArchivo}.xlsx"`);
