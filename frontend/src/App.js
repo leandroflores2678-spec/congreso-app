@@ -260,7 +260,6 @@ function Inscripcion() {
                 <label className="form-label">Rol *</label>
                 <select className="form-input" value={form.tipo_persona} onChange={e => setForm({ ...form, tipo_persona: e.target.value })}>
                   <option value="Hermano">Hermano</option>
-                  <option value="Pastor">Pastor</option>
                   <option value="Colaborador">Colaborador</option>
                   <option value="Invitado">Invitado</option>
                 </select>
