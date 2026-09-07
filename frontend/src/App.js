@@ -277,16 +277,25 @@ function Inscripcion() {
                       <h4>{formatDia(dia)}</h4>
                       <div className="comidas-row">
                         {comidas.map(c => {
-                          const disabled = c.disponibles <= 0;
+                          const agotado = c.disponibles <= 0;
+                          const diaDate = new Date(dia + 'T06:00:00');
+                          const cerrado = new Date() >= diaDate;
+                          const disabled = agotado || cerrado;
                           const selected = seleccionadas.includes(c.id);
                           return (
-                            <div key={c.id} className={`comida-card ${selected ? 'selected' : ''} ${disabled ? 'disabled' : ''}`} onClick={() => !disabled && toggleComida(c.id)}>
+                            <div key={c.id} className={`comida-card ${selected ? 'selected' : ''} ${disabled ? 'disabled' : ''} ${agotado ? 'agotado' : ''} ${cerrado ? 'cerrado' : ''}`} onClick={() => !disabled && toggleComida(c.id)}>
                               <input type="checkbox" checked={selected} disabled={disabled} readOnly className="comida-checkbox-hidden" />
                               <div className="comida-card-turno">
                                 {c.turno}
                               </div>
                               <div className="comida-card-horario">{getHorario(c.turno, dia)}</div>
-                              <div className="comida-card-cupo"><span>{c.disponibles}</span>/{c.cupo}</div>
+                              {agotado ? (
+                                <div className="comida-card-cupo agotado-text">AGOTADO</div>
+                              ) : cerrado ? (
+                                <div className="comida-card-cupo cerrado-text">CERRADO</div>
+                              ) : (
+                                <div className="comida-card-cupo"><span>{c.disponibles}</span>/{c.cupo}</div>
+                              )}
                               {c.tipo_persona === 'Pastor' && <span className="badge-pastor">Solo Pastores</span>}
                             </div>
                           );

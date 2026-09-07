@@ -874,6 +874,28 @@ select.form-input option {
   cursor: not-allowed;
   pointer-events: none;
 }
+.comida-card.agotado {
+  opacity: 0.35;
+  background: rgba(239,68,68,0.08);
+  border-color: rgba(239,68,68,0.3);
+}
+.comida-card.cerrado {
+  opacity: 0.35;
+  background: rgba(150,150,150,0.08);
+  border-color: rgba(150,150,150,0.3);
+}
+.agotado-text {
+  color: var(--red);
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+}
+.cerrado-text {
+  color: #999;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+}
 
 .comida-checkbox-hidden {
   display: none;
