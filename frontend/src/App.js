@@ -149,24 +149,21 @@ function Inscripcion() {
       setTimeout(() => controller.abort(), 3000);
       const res = await fetch(`${API}/cronograma`, { signal: controller.signal });
       const data = await res.json();
-      setCronograma(data);
+      setCronograma(data.filter(c => c.turno !== 'Cena'));
     } catch {
       // Datos de prueba mientras no hay conexión al servidor
       setCronograma([
         { id: 1, dia: '2026-09-10T00:00:00.000Z', turno: 'Desayuno', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
         { id: 2, dia: '2026-09-10T00:00:00.000Z', turno: 'Almuerzo', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
         { id: 3, dia: '2026-09-10T00:00:00.000Z', turno: 'Merienda', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
-        { id: 16, dia: '2026-09-10T00:00:00.000Z', turno: 'Cena', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
         { id: 4, dia: '2026-09-11T00:00:00.000Z', turno: 'Desayuno', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
         { id: 5, dia: '2026-09-11T00:00:00.000Z', turno: 'Almuerzo', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
         { id: 6, dia: '2026-09-11T00:00:00.000Z', turno: 'Merienda', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
-        { id: 14, dia: '2026-09-11T00:00:00.000Z', turno: 'Cena', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
-        { id: 7, dia: '2026-09-12T00:00:00.000Z', turno: 'Desayuno', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
-        { id: 8, dia: '2026-09-12T00:00:00.000Z', turno: 'Almuerzo', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
-        { id: 9, dia: '2026-09-12T00:00:00.000Z', turno: 'Merienda', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
-        { id: 15, dia: '2026-09-12T00:00:00.000Z', turno: 'Cena', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
-        { id: 10, dia: '2026-09-13T00:00:00.000Z', turno: 'Desayuno', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
-        { id: 11, dia: '2026-09-13T00:00:00.000Z', turno: 'Almuerzo', tipo_persona: 'Todos', cupo: 200, disponibles: 200 },
+        { id: 7, dia: '2026-09-12T00:00:00.000Z', turno: 'Desayuno', tipo_persona: 'Todos', cupo: 300, disponibles: 300 },
+        { id: 8, dia: '2026-09-12T00:00:00.000Z', turno: 'Almuerzo', tipo_persona: 'Todos', cupo: 300, disponibles: 300 },
+        { id: 9, dia: '2026-09-12T00:00:00.000Z', turno: 'Merienda', tipo_persona: 'Todos', cupo: 300, disponibles: 300 },
+        { id: 10, dia: '2026-09-13T00:00:00.000Z', turno: 'Desayuno', tipo_persona: 'Todos', cupo: 300, disponibles: 300 },
+        { id: 11, dia: '2026-09-13T00:00:00.000Z', turno: 'Almuerzo', tipo_persona: 'Todos', cupo: 300, disponibles: 300 },
       ]);
     }
   };
@@ -179,7 +176,7 @@ function Inscripcion() {
 
   const enviar = async (e) => {
     e.preventDefault();
-    if (!form.nombre || !form.apellido) return setMensaje({ tipo: 'error', texto: 'Completa nombre y apellido' });
+    if (!form.nombre || !form.apellido || !form.telefono || !form.tipo_persona) return setMensaje({ tipo: 'error', texto: 'Completa todos los campos obligatorios' });
     if (seleccionadas.length === 0) return setMensaje({ tipo: 'error', texto: 'Selecciona al menos una comida' });
 
     setLoading(true);
@@ -191,8 +188,8 @@ function Inscripcion() {
       });
       const data = await res.json();
       if (res.ok) {
-        setMensaje({ tipo: 'exito', texto: 'Inscripcion exitosa!' });
-        setForm({ nombre: '', apellido: '', telefono: '', tipo_persona: 'Todos', iglesia: '' });
+        setMensaje({ tipo: 'exito', texto: '¡Inscripcion exitosa! Nos vemos en la conferencia 🙌' });
+        setForm({ nombre: '', apellido: '', telefono: '', tipo_persona: 'Hermano', iglesia: '' });
         setSeleccionadas([]);
         cargarCronograma();
       } else {
@@ -208,7 +205,6 @@ function Inscripcion() {
     'Desayuno': '7:30 a 8:30 hs',
     'Almuerzo': '13:00 hs',
     'Merienda': '18:00 a 19:00 hs',
-    'Cena': '20:00 hs',
   };
   const HORARIOS_DOMINGO = { 'Desayuno': '8:00 a 9:00 hs' };
 
@@ -257,11 +253,11 @@ function Inscripcion() {
 
             <div className="form-row">
               <div className="form-group">
-                <label className="form-label">Telefono</label>
-                <input className="form-input" value={form.telefono} onChange={e => setForm({ ...form, telefono: e.target.value })} placeholder="Tu telefono" />
+                <label className="form-label">Telefono *</label>
+                <input className="form-input" value={form.telefono} onChange={e => setForm({ ...form, telefono: e.target.value })} placeholder="Tu telefono" required />
               </div>
               <div className="form-group">
-                <label className="form-label">Asistente *</label>
+                <label className="form-label">Rol *</label>
                 <select className="form-input" value={form.tipo_persona} onChange={e => setForm({ ...form, tipo_persona: e.target.value })}>
                   <option value="Hermano">Hermano</option>
                   <option value="Pastor">Pastor</option>
