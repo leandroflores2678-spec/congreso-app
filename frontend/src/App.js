@@ -61,10 +61,28 @@ function App() {
 }
 
 /* ====== HERO ====== */
+const HERO_IMAGES = ['/hero4.jpg', '/hero1.jpg', '/hero2.jpg', '/hero3.jpg'];
+
 function Hero({ onInscribirse }) {
+  const [imgIndex, setImgIndex] = useState(0);
+
+  useEffect(() => {
+    if (HERO_IMAGES.length <= 1) return;
+    const timer = setInterval(() => {
+      setImgIndex(prev => (prev + 1) % HERO_IMAGES.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <header className="hero" id="inicio">
-      <div className="hero-bg-img" style={{ backgroundImage: `url(${process.env.PUBLIC_URL}/iglesia.jpg)` }} />
+      {HERO_IMAGES.map((src, i) => (
+        <div
+          key={src}
+          className={`hero-bg-img ${i === imgIndex ? 'active' : ''}`}
+          style={{ backgroundImage: `url(${process.env.PUBLIC_URL}${src})` }}
+        />
+      ))}
       <div className="hero-overlay" />
 
       <img src="/aceite.png" alt="" className="hero-aceite" />
@@ -365,6 +383,63 @@ function Contacto() {
   );
 }
 
+/* ====== PIE CHART ====== */
+function PieChart({ reservas }) {
+  const roles = reservas.reduce((acc, r) => {
+    const rol = r.tipo_persona || 'Sin rol';
+    acc[rol] = (acc[rol] || 0) + 1;
+    return acc;
+  }, {});
+
+  const total = Object.values(roles).reduce((s, v) => s + v, 0);
+  if (total === 0) return <div className="pie-empty">Sin datos</div>;
+
+  const colors = { Hermano: '#3498db', Colaborador: '#e67e22', Invitado: '#2ecc71', Pastor: '#9b59b6' };
+  const defaultColor = '#95a5a6';
+  const entries = Object.entries(roles).sort((a, b) => b[1] - a[1]);
+
+  let cumAngle = 0;
+  const slices = entries.map(([rol, count]) => {
+    const pct = count / total;
+    const startAngle = cumAngle;
+    cumAngle += pct * 360;
+    const endAngle = cumAngle;
+    const startRad = (startAngle - 90) * Math.PI / 180;
+    const endRad = (endAngle - 90) * Math.PI / 180;
+    const largeArc = pct > 0.5 ? 1 : 0;
+    const x1 = 100 + 80 * Math.cos(startRad);
+    const y1 = 100 + 80 * Math.sin(startRad);
+    const x2 = 100 + 80 * Math.cos(endRad);
+    const y2 = 100 + 80 * Math.sin(endRad);
+
+    const path = pct >= 1
+      ? `M100,20 A80,80 0 1,1 99.99,20 Z`
+      : `M100,100 L${x1},${y1} A80,80 0 ${largeArc},1 ${x2},${y2} Z`;
+
+    return { rol, count, pct, path, color: colors[rol] || defaultColor };
+  });
+
+  return (
+    <div className="pie-container">
+      <svg viewBox="0 0 200 200" className="pie-svg">
+        {slices.map(s => (
+          <path key={s.rol} d={s.path} fill={s.color} stroke="#fff" strokeWidth="2" />
+        ))}
+      </svg>
+      <div className="pie-legend">
+        {slices.map(s => (
+          <div key={s.rol} className="pie-legend-item">
+            <span className="pie-legend-color" style={{ background: s.color }}></span>
+            <span className="pie-legend-label">{s.rol}</span>
+            <span className="pie-legend-value">{s.count} ({Math.round(s.pct * 100)}%)</span>
+          </div>
+        ))}
+        <div className="pie-legend-total">Total: {total}</div>
+      </div>
+    </div>
+  );
+}
+
 /* ====== ADMIN ====== */
 function AdminPanel({ onVolver }) {
   const [resumen, setResumen] = useState([]);
@@ -452,6 +527,11 @@ function AdminPanel({ onVolver }) {
               <span className="admin-stat-num">{reservas.length}</span>
               <span className="admin-stat-label">Reservas</span>
             </div>
+          </div>
+
+          <div className="admin-dashboard">
+            <h2 className="admin-dashboard-title">Inscriptos por Rol</h2>
+            <PieChart reservas={reservas} />
           </div>
 
           <div className="admin-dias">

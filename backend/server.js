@@ -218,7 +218,7 @@ app.get('/api/admin/excel/:cronograma_id', async (req, res) => {
     const personasResult = await pool.request()
       .input('id', sql.Int, cronogramaId)
       .query(`
-        SELECT p.id, p.nombre, p.apellido, p.tipo_persona
+        SELECT p.id, p.nombre, p.apellido, p.telefono, p.tipo_persona
         FROM Reserva_Comidas rc
         JOIN Personas p ON rc.persona_id = p.id
         WHERE rc.cronograma_id = @id
@@ -232,9 +232,10 @@ app.get('/api/admin/excel/:cronograma_id', async (req, res) => {
     ws.getColumn(1).width = 6;
     ws.getColumn(2).width = 22;
     ws.getColumn(3).width = 22;
-    ws.getColumn(4).width = 16;
+    ws.getColumn(4).width = 18;
+    ws.getColumn(5).width = 16;
 
-    ws.mergeCells('A1:D1');
+    ws.mergeCells('A1:E1');
     const titulo = ws.getCell('A1');
     titulo.value = `${nombreArchivo} - Total: ${personas.length}`;
     titulo.font = { bold: true, size: 14, color: { argb: 'FFFFFFFF' } };
@@ -242,7 +243,7 @@ app.get('/api/admin/excel/:cronograma_id', async (req, res) => {
     titulo.alignment = { horizontal: 'center', vertical: 'middle' };
     ws.getRow(1).height = 30;
 
-    const header = ws.addRow(['#', 'Nombre', 'Apellido', 'Rol']);
+    const header = ws.addRow(['#', 'Nombre', 'Apellido', 'Telefono', 'Rol']);
     header.eachCell(cell => {
       cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
       cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2D2D2D' } };
@@ -250,7 +251,7 @@ app.get('/api/admin/excel/:cronograma_id', async (req, res) => {
     });
 
     personas.forEach((p, i) => {
-      const row = ws.addRow([i + 1, p.nombre, p.apellido, p.tipo_persona]);
+      const row = ws.addRow([i + 1, p.nombre, p.apellido, p.telefono || '', p.tipo_persona]);
       row.eachCell(cell => {
         cell.alignment = { horizontal: 'left' };
         if (i % 2 === 0) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF5F5F5' } };

@@ -175,6 +175,11 @@ html { scroll-behavior: smooth; scroll-padding-top: 72px; }
   background-position: center;
   background-repeat: no-repeat;
   z-index: 0;
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+}
+.hero-bg-img.active {
+  opacity: 1;
 }
 
 .hero-overlay {
@@ -1168,6 +1173,69 @@ select.form-input option {
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-top: 4px;
+}
+.admin-dashboard {
+  background: var(--surface);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.admin-dashboard-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+  text-align: center;
+}
+.pie-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.pie-svg {
+  width: 180px;
+  height: 180px;
+}
+.pie-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pie-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+.pie-legend-color {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.pie-legend-label {
+  font-weight: 600;
+  min-width: 90px;
+}
+.pie-legend-value {
+  color: var(--text2);
+}
+.pie-legend-total {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--gold);
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid var(--glass-border);
+}
+.pie-empty {
+  text-align: center;
+  color: var(--text3);
+  padding: 20px;
 }
 .admin-dias {
   display: flex;
