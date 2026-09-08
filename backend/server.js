@@ -233,9 +233,8 @@ app.get('/api/admin/excel/:cronograma_id', async (req, res) => {
     ws.getColumn(2).width = 22;
     ws.getColumn(3).width = 22;
     ws.getColumn(4).width = 18;
-    ws.getColumn(5).width = 16;
 
-    ws.mergeCells('A1:E1');
+    ws.mergeCells('A1:D1');
     const titulo = ws.getCell('A1');
     titulo.value = `${nombreArchivo} - Total: ${personas.length}`;
     titulo.font = { bold: true, size: 14, color: { argb: 'FFFFFFFF' } };
@@ -243,19 +242,69 @@ app.get('/api/admin/excel/:cronograma_id', async (req, res) => {
     titulo.alignment = { horizontal: 'center', vertical: 'middle' };
     ws.getRow(1).height = 30;
 
-    const header = ws.addRow(['#', 'Nombre', 'Apellido', 'Telefono', 'Cargo']);
-    header.eachCell(cell => {
+    const grupos = {};
+    personas.forEach(p => {
+      const cargo = p.tipo_persona || 'Sin cargo';
+      if (!grupos[cargo]) grupos[cargo] = [];
+      grupos[cargo].push(p);
+    });
+
+    const cargoColors = { Hermano: 'FF2E86C1', Colaborador: 'FFE67E22', Invitado: 'FF27AE60' };
+
+    Object.entries(grupos).forEach(([cargo, lista]) => {
+      ws.addRow([]);
+      const grupoTitle = ws.addRow([`${cargo} (${lista.length})`]);
+      ws.mergeCells(grupoTitle.number, 1, grupoTitle.number, 4);
+      grupoTitle.getCell(1).font = { bold: true, size: 12, color: { argb: 'FFFFFFFF' } };
+      grupoTitle.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: cargoColors[cargo] || 'FF7F8C8D' } };
+      grupoTitle.getCell(1).alignment = { horizontal: 'center', vertical: 'middle' };
+      grupoTitle.height = 26;
+
+      const header = ws.addRow(['#', 'Nombre', 'Apellido', 'Telefono']);
+      header.eachCell(cell => {
+        cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2D2D2D' } };
+        cell.alignment = { horizontal: 'center' };
+      });
+
+      lista.forEach((p, i) => {
+        const row = ws.addRow([i + 1, p.nombre, p.apellido, p.telefono || '']);
+        row.eachCell(cell => {
+          cell.alignment = { horizontal: 'left' };
+          if (i % 2 === 0) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF5F5F5' } };
+        });
+      });
+    });
+
+    ws.addRow([]);
+    ws.addRow([]);
+    const resumenTitle = ws.addRow(['Resumen por Cargo']);
+    ws.mergeCells(resumenTitle.number, 1, resumenTitle.number, 4);
+    resumenTitle.getCell(1).font = { bold: true, size: 12, color: { argb: 'FFFFFFFF' } };
+    resumenTitle.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1A5276' } };
+    resumenTitle.getCell(1).alignment = { horizontal: 'center' };
+    resumenTitle.height = 26;
+
+    const resHeader = ws.addRow(['Cargo', 'Cantidad', '%']);
+    resHeader.eachCell(cell => {
       cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
       cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2D2D2D' } };
       cell.alignment = { horizontal: 'center' };
     });
 
-    personas.forEach((p, i) => {
-      const row = ws.addRow([i + 1, p.nombre, p.apellido, p.telefono || '', p.tipo_persona]);
-      row.eachCell(cell => {
-        cell.alignment = { horizontal: 'left' };
-        if (i % 2 === 0) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF5F5F5' } };
-      });
+    Object.entries(grupos).forEach(([cargo, lista]) => {
+      const pct = personas.length > 0 ? Math.round((lista.length / personas.length) * 100) : 0;
+      const row = ws.addRow([cargo, lista.length, `${pct}%`]);
+      row.getCell(1).font = { bold: true };
+      row.getCell(2).alignment = { horizontal: 'center' };
+      row.getCell(3).alignment = { horizontal: 'center' };
+    });
+
+    const totalRow = ws.addRow(['TOTAL', personas.length, '100%']);
+    totalRow.eachCell(cell => {
+      cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1A5276' } };
+      cell.alignment = { horizontal: 'center' };
     });
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -274,6 +323,25 @@ app.delete('/api/admin/reservas/:id', async (req, res) => {
       .input('id', sql.Int, req.params.id)
       .query('DELETE FROM Reserva_Comidas WHERE id = @id');
     res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Buscar persona
+app.get('/api/admin/buscar', async (req, res) => {
+  try {
+    const q = req.query.q || '';
+    if (q.length < 2) return res.json([]);
+    const result = await pool.request()
+      .input('q', sql.VarChar(100), `%${q}%`)
+      .query(`
+        SELECT p.id, p.nombre, p.apellido, p.telefono, p.tipo_persona
+        FROM Personas p
+        WHERE p.nombre LIKE @q OR p.apellido LIKE @q
+        ORDER BY p.apellido, p.nombre
+      `);
+    res.json(result.recordset);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
