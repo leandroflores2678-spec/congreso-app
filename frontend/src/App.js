@@ -207,11 +207,13 @@ function Inscripcion() {
       });
       const data = await res.json();
       if (res.ok) {
-        setMensaje({ tipo: 'exito', texto: '¡Inscripcion exitosa! Te esperamos en la conferencia 🙌' });
+        setMensaje({ tipo: 'exito', texto: '¡Inscripcion exitosa!' });
         setMensajeKey(k => k + 1);
         setForm({ nombre: '', apellido: '', telefono: '', tipo_persona: 'Hermano', iglesia: '' });
         setSeleccionadas([]);
         cargarCronograma();
+        var insc = document.getElementById('inscripcion');
+        if (insc) insc.scrollIntoView({ behavior: 'smooth', block: 'start' });
       } else {
         setMensaje({ tipo: 'error', texto: data.error });
         setMensajeKey(k => k + 1);
