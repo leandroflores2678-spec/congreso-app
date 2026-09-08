@@ -157,6 +157,7 @@ function Inscripcion() {
   const [cronograma, setCronograma] = useState([]);
   const [seleccionadas, setSeleccionadas] = useState([]);
   const [mensaje, setMensaje] = useState(null);
+  const [mensajeKey, setMensajeKey] = useState(0);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => { cargarCronograma(); }, []);
@@ -194,8 +195,8 @@ function Inscripcion() {
 
   const enviar = async (e) => {
     e.preventDefault();
-    if (!form.nombre || !form.apellido || !form.telefono || !form.tipo_persona) return setMensaje({ tipo: 'error', texto: 'Completa todos los campos obligatorios' });
-    if (seleccionadas.length === 0) return setMensaje({ tipo: 'error', texto: 'Selecciona al menos una comida' });
+    if (!form.nombre || !form.apellido || !form.telefono || !form.tipo_persona) { setMensaje({ tipo: 'error', texto: 'Completa todos los campos obligatorios' }); setMensajeKey(k => k + 1); return; }
+    if (seleccionadas.length === 0) { setMensaje({ tipo: 'error', texto: 'Selecciona al menos una comida' }); setMensajeKey(k => k + 1); return; }
 
     setLoading(true);
     try {
@@ -207,14 +208,17 @@ function Inscripcion() {
       const data = await res.json();
       if (res.ok) {
         setMensaje({ tipo: 'exito', texto: '¡Inscripcion exitosa! Nos vemos en la conferencia 🙌' });
+        setMensajeKey(k => k + 1);
         setForm({ nombre: '', apellido: '', telefono: '', tipo_persona: 'Hermano', iglesia: '' });
         setSeleccionadas([]);
         cargarCronograma();
       } else {
         setMensaje({ tipo: 'error', texto: data.error });
+        setMensajeKey(k => k + 1);
       }
     } catch {
       setMensaje({ tipo: 'error', texto: 'Error de conexion con el servidor' });
+      setMensajeKey(k => k + 1);
     }
     setLoading(false);
   };
@@ -255,7 +259,17 @@ function Inscripcion() {
 
         <div className="inscripcion-card">
           <h3>Registrarme a la conferencia</h3>
-          {mensaje && <div className={`mensaje ${mensaje.tipo}`}>{mensaje.texto}</div>}
+          {mensaje && mensaje.tipo === 'error' && <div key={mensajeKey} className="mensaje error">{mensaje.texto}</div>}
+          {mensaje && mensaje.tipo === 'exito' && (
+            <div key={mensajeKey} className="exito-overlay" onClick={() => setMensaje(null)}>
+              <div className="exito-modal">
+                <div className="exito-icon">✅</div>
+                <h2 className="exito-titulo">¡Inscripcion exitosa!</h2>
+                <p className="exito-texto">Nos vemos en la conferencia 🙌</p>
+                <button className="btn-primary" onClick={() => setMensaje(null)}>CERRAR</button>
+              </div>
+            </div>
+          )}
 
           <form onSubmit={enviar}>
             <div className="form-row">
@@ -275,7 +289,7 @@ function Inscripcion() {
                 <input className="form-input" value={form.telefono} onChange={e => setForm({ ...form, telefono: e.target.value })} placeholder="Tu telefono" required />
               </div>
               <div className="form-group">
-                <label className="form-label">Rol *</label>
+                <label className="form-label">Cargo *</label>
                 <select className="form-input" value={form.tipo_persona} onChange={e => setForm({ ...form, tipo_persona: e.target.value })}>
                   <option value="Hermano">Hermano</option>
                   <option value="Colaborador">Colaborador</option>
@@ -530,7 +544,7 @@ function AdminPanel({ onVolver }) {
           </div>
 
           <div className="admin-dashboard">
-            <h2 className="admin-dashboard-title">Inscriptos por Rol</h2>
+            <h2 className="admin-dashboard-title">Inscriptos por Cargo</h2>
             <PieChart reservas={reservas} />
           </div>
 
@@ -576,7 +590,7 @@ function AdminPanel({ onVolver }) {
                                     <div className="admin-persona-header">
                                       <span>Nombre</span>
                                       <span>Telefono</span>
-                                      <span>Tipo</span>
+                                      <span>Cargo</span>
                                       <span></span>
                                     </div>
                                     {personas.map(p => (

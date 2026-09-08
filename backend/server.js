@@ -243,7 +243,7 @@ app.get('/api/admin/excel/:cronograma_id', async (req, res) => {
     titulo.alignment = { horizontal: 'center', vertical: 'middle' };
     ws.getRow(1).height = 30;
 
-    const header = ws.addRow(['#', 'Nombre', 'Apellido', 'Telefono', 'Rol']);
+    const header = ws.addRow(['#', 'Nombre', 'Apellido', 'Telefono', 'Cargo']);
     header.eachCell(cell => {
       cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
       cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2D2D2D' } };
