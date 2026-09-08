@@ -207,7 +207,7 @@ function Inscripcion() {
       });
       const data = await res.json();
       if (res.ok) {
-        setMensaje({ tipo: 'exito', texto: '¡Inscripcion exitosa! Nos vemos en la conferencia 🙌' });
+        setMensaje({ tipo: 'exito', texto: '¡Inscripcion exitosa! Te esperamos en la conferencia 🙌' });
         setMensajeKey(k => k + 1);
         setForm({ nombre: '', apellido: '', telefono: '', tipo_persona: 'Hermano', iglesia: '' });
         setSeleccionadas([]);
@@ -262,10 +262,13 @@ function Inscripcion() {
           {mensaje && mensaje.tipo === 'error' && <div key={mensajeKey} className="mensaje error">{mensaje.texto}</div>}
           {mensaje && mensaje.tipo === 'exito' && (
             <div key={mensajeKey} className="exito-overlay" onClick={() => setMensaje(null)}>
-              <div className="exito-modal">
-                <div className="exito-icon">✅</div>
+              <div className="exito-modal" onClick={e => e.stopPropagation()}>
+                <svg className="exito-check" viewBox="0 0 80 80">
+                  <circle className="exito-check-circle" cx="40" cy="40" r="36" fill="none" stroke="var(--gold)" strokeWidth="3" />
+                  <path className="exito-check-path" d="M24 42 L35 53 L56 28" fill="none" stroke="var(--gold)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
                 <h2 className="exito-titulo">¡Inscripcion exitosa!</h2>
-                <p className="exito-texto">Nos vemos en la conferencia 🙌</p>
+                <p className="exito-texto">Te esperamos en la conferencia</p>
                 <button className="btn-primary" onClick={() => setMensaje(null)}>CERRAR</button>
               </div>
             </div>
