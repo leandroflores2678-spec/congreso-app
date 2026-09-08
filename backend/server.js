@@ -328,7 +328,7 @@ app.delete('/api/admin/reservas/:id', async (req, res) => {
   }
 });
 
-// Buscar persona
+// Buscar persona con sus comidas
 app.get('/api/admin/buscar', async (req, res) => {
   try {
     const q = req.query.q || '';
@@ -336,10 +336,13 @@ app.get('/api/admin/buscar', async (req, res) => {
     const result = await pool.request()
       .input('q', sql.VarChar(100), `%${q}%`)
       .query(`
-        SELECT p.id, p.nombre, p.apellido, p.telefono, p.tipo_persona
+        SELECT p.id, p.nombre, p.apellido, p.telefono, p.tipo_persona,
+          cc.dia, cc.turno, rc.fecha_reserva
         FROM Personas p
+        LEFT JOIN Reserva_Comidas rc ON rc.persona_id = p.id
+        LEFT JOIN Cronograma_Comidas cc ON rc.cronograma_id = cc.id
         WHERE p.nombre LIKE @q OR p.apellido LIKE @q
-        ORDER BY p.apellido, p.nombre
+        ORDER BY p.apellido, p.nombre, cc.dia, cc.turno
       `);
     res.json(result.recordset);
   } catch (err) {
